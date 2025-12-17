@@ -1,53 +1,44 @@
 {% extends 'biblioteca/base.html' %}
 
-{% block title %}Confirmar Devolución - Biblioteca IBG{% endblock %}
+{% block title %}Confirmar Devolución - Biblioteca{% endblock %}
 
 {% block content %}
-<div class="container mt-4 mb-5">
+<div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card border-warning">
-                <div class="card-header bg-warning">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-warning shadow-sm">
+                <div class="card-header bg-warning text-dark">
                     <h5 class="mb-0">
-                        <i class="bi bi-exclamation-triangle"></i> Confirmar Devolución
+                        <i class="fas fa-exclamation-triangle"></i> Confirmar Devolución
                     </h5>
                 </div>
                 <div class="card-body">
-                    <p class="mb-4">
+                    <p class="lead mb-4">
                         ¿Estás seguro de que deseas devolver el siguiente libro?
                     </p>
 
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ prestamo.libro.titulo }}</h5>
-                            <p class="card-text text-muted">{{ prestamo.libro.autor.nombre }}</p>
-                            <hr>
-                            <p class="small mb-2">
-                                <strong>Código:</strong> {{ prestamo.libro.codigo }}
-                            </p>
-                            <p class="small mb-2">
-                                <strong>Fecha de Préstamo:</strong> {{ prestamo.fecha_prestamo|date:"d/m/Y H:i" }}
-                            </p>
-                            <p class="small mb-2">
-                                <strong>Fecha de Devolución Esperada:</strong> {{ prestamo.fecha_devolucion_esperada|date:"d/m/Y" }}
-                            </p>
-                            {% if prestamo.esta_atrasado %}
-                            <p class="small text-danger">
-                                <i class="bi bi-exclamation-circle"></i>
-                                <strong>Este préstamo está atrasado.</strong>
-                            </p>
-                            {% endif %}
-                        </div>
+                    <div class="alert alert-secondary">
+                        <h5 class="alert-heading">{{ prestamo.libro.titulo }}</h5>
+                        <p class="mb-1">
+                            <strong>Autores:</strong>
+                            {% for autor in prestamo.libro.autores.all %}
+                                {{ autor.nombre }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+                        <hr>
+                        <p class="mb-0">
+                            <strong>Fecha de Préstamo:</strong> {{ prestamo.fecha_prestamo|date:"d/m/Y H:i" }}
+                        </p>
                     </div>
 
-                    <form method="post" novalidate>
+                    <form method="post">
                         {% csrf_token %}
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-success btn-lg flex-grow-1">
-                                <i class="bi bi-check-circle"></i> Confirmar Devolución
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-check-circle"></i> Sí, Confirmar Devolución
                             </button>
-                            <a href="{% url 'biblioteca:mis_prestamos' %}" class="btn btn-secondary btn-lg flex-grow-1">
-                                <i class="bi bi-x-circle"></i> Cancelar
+                            <a href="{% url 'biblioteca:mis_prestamos' %}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times"></i> Cancelar
                             </a>
                         </div>
                     </form>

@@ -1,137 +1,102 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator
-from decimal import Decimal
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
 
+# Modelo PerfilUsuario con Relación Uno a Uno
+class PerfilUsuario(models.Model):
+    """Modelo para extender el modelo de usuario predeterminado de Django."""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
+    direccion = models.CharField(max_length=255, blank=True, null=True)
+    telefono = models.CharField(max_length=20, blank=True, null=True)
+    fecha_nacimiento = models.DateField(blank=True, null=True)
 
+    def __str__(self):
+        return f'Perfil de {self.user.username}'
+
+# Modelo Autor
+class Autor(models.Model):
+    """Modelo para los autores de los libros."""
+    nombre = models.CharField(max_length=100)
+    biografia = models.TextField(blank=True, null=True)
+    fecha_nacimiento = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+        return self.nombre
+
+# Modelo Categoria con Relación Uno a Muchos
 class Categoria(models.Model):
-    """Modelo para categorías de productos - Relación Uno a Muchos"""
+    """Modelo para categorías de libros."""
     nombre = models.CharField(max_length=100, unique=True)
-    descripcion = models.TextField(blank=True, null=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_actualizacion = models.DateTimeField(auto_now=True)
-
+    
     class Meta:
-        ordering = ['nombre']
         verbose_name = 'Categoría'
         verbose_name_plural = 'Categorías'
 
     def __str__(self):
         return self.nombre
 
-    def get_productos_count(self):
-        """Retorna la cantidad de productos en esta categoría"""
-        return self.productos.count()
-
-
+# Modelo Etiqueta con Relación Muchos a Muchos
 class Etiqueta(models.Model):
-    """Modelo para etiquetas de productos - Relación Muchos a Muchos"""
-    nombre = models.CharField(max_length=100, unique=True)
-    descripcion = models.TextField(blank=True, null=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['nombre']
-        verbose_name = 'Etiqueta'
-        verbose_name_plural = 'Etiquetas'
+    """Modelo para etiquetas de libros."""
+    nombre = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.nombre
 
-    def get_productos_count(self):
-        """Retorna la cantidad de productos con esta etiqueta"""
-        return self.productos.count()
-
-
-class Producto(models.Model):
-    """Modelo principal para productos - Relación Muchos a Uno con Categoría"""
-    nombre = models.CharField(max_length=300)
-    descripcion = models.TextField()
-    precio = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        validators=[MinValueValidator(Decimal('0.01'))]
-    )
-    codigo = models.CharField(max_length=50, unique=True)
-    stock = models.IntegerField(default=1, validators=[MinValueValidator(0)])
-    disponible = models.BooleanField(default=True)
+# Modelo Libro
+class Libro(models.Model):
+    """Modelo principal para los libros de la biblioteca."""
+    titulo = models.CharField(max_length=200)
+    autores = models.ManyToManyField(Autor, related_name='libros')
+    descripcion = models.TextField(blank=True)
+    isbn = models.CharField(max_length=13, unique=True, help_text='ISBN de 13 caracteres')
+    cantidad_disponible = models.PositiveIntegerField(default=0)
     
-    # Relación Muchos a Uno: Un producto pertenece a una categoría
-    categoria = models.ForeignKey(
-        Categoria,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='productos'
-    )
+    # Relación ForeignKey: Un libro pertenece a una categoría.
+    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, related_name='libros')
     
-    # Relación Muchos a Muchos: Un producto puede tener varias etiquetas
-    etiquetas = models.ManyToManyField(
-        Etiqueta,
-        blank=True,
-        related_name='productos'
-    )
+    # Relación ManyToManyField: Un libro puede tener varias etiquetas.
+    etiquetas = models.ManyToManyField(Etiqueta, blank=True, related_name='libros')
     
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_publicacion = models.DateField(blank=True, null=True)
+    editorial = models.CharField(max_length=100, blank=True, null=True)
+    numero_paginas = models.PositiveIntegerField(blank=True, null=True)
+    idioma = models.CharField(max_length=50, default='Español')
+    
+    fecha_agregado = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-fecha_creacion']
-        indexes = [
-            models.Index(fields=['nombre']),
-            models.Index(fields=['categoria']),
-            models.Index(fields=['precio']),
-        ]
-        verbose_name = 'Producto'
-        verbose_name_plural = 'Productos'
+        ordering = ['titulo']
+        verbose_name = 'Libro'
+        verbose_name_plural = 'Libros'
 
     def __str__(self):
-        return f"{self.nombre} - ${self.precio}"
+        return self.titulo
 
-    @property
-    def puede_venderse(self):
-        """Verifica si hay stock disponible"""
-        return self.stock > 0 and self.disponible
-
-
-class DetalleProducto(models.Model):
-    """Modelo para detalles adicionales de productos - Relación Uno a Uno"""
-    producto = models.OneToOneField(
-        Producto,
-        on_delete=models.CASCADE,
-        related_name='detalle'
-    )
-    
-    # Detalles específicos del producto
-    peso = models.DecimalField(
-        max_digits=8,
-        decimal_places=2,
-        help_text="Peso en kilogramos"
-    )
-    largo = models.DecimalField(
-        max_digits=8,
-        decimal_places=2,
-        help_text="Largo en centímetros"
-    )
-    ancho = models.DecimalField(
-        max_digits=8,
-        decimal_places=2,
-        help_text="Ancho en centímetros"
-    )
-    alto = models.DecimalField(
-        max_digits=8,
-        decimal_places=2,
-        help_text="Alto en centímetros"
-    )
-    material = models.CharField(max_length=100, blank=True)
-    color = models.CharField(max_length=100, blank=True)
-    fabricante = models.CharField(max_length=200, blank=True)
-    
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_actualizacion = models.DateTimeField(auto_now=True)
+# Modelo Prestamo con Relación a Libro y Usuario
+class Prestamo(models.Model):
+    """Modelo para gestionar los préstamos de libros a usuarios."""
+    libro = models.ForeignKey(Libro, on_delete=models.CASCADE, related_name='prestamos')
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='prestamos')
+    fecha_prestamo = models.DateTimeField(auto_now_add=True)
+    fecha_devolucion = models.DateTimeField(blank=True, null=True)
+    devuelto = models.BooleanField(default=False)
 
     class Meta:
-        verbose_name = 'Detalle de Producto'
-        verbose_name_plural = 'Detalles de Productos'
+        ordering = ['-fecha_prestamo']
+        verbose_name = 'Préstamo'
+        verbose_name_plural = 'Préstamos'
 
     def __str__(self):
-        return f"Detalles de {self.producto.nombre}"
+        return f'{self.libro.titulo} prestado a {self.usuario.username}'
+
+    def devolver(self):
+        """Marca el libro como devuelto."""
+        self.fecha_devolucion = timezone.now()
+        self.devuelto = True
+        self.save()
+        # Incrementar el stock del libro
+        self.libro.cantidad_disponible += 1
+        self.libro.save()

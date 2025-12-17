@@ -1,74 +1,45 @@
 {% extends 'biblioteca/base.html' %}
 
-{% block title %}Confirmar Eliminación{% endblock %}
+{% block title %}Confirmar Eliminación - Biblioteca{% endblock %}
 
 {% block content %}
 <div class="container my-5">
     <div class="row">
-        <div class="col-md-6 offset-md-3">
-            <div class="card border-danger">
+        <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+            <div class="card border-danger shadow-sm">
                 <div class="card-header bg-danger text-white">
                     <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación</h5>
                 </div>
                 <div class="card-body">
-                    <p class="lead">¿Estás seguro de que deseas eliminar este {{ tipo }}?</p>
+                    <p class="lead">¿Estás seguro de que deseas eliminar el siguiente elemento?</p>
                     
-                    {% if tipo == 'producto' %}
-                        <div class="alert alert-warning">
-                            <strong>{{ producto.nombre }}</strong><br>
-                            Código: {{ producto.codigo }}<br>
-                            Precio: ${{ producto.precio }}
-                        </div>
-                        <p class="text-danger"><strong>Advertencia:</strong> Esta acción no se puede deshacer.</p>
-                        
-                        <form method="post" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-lg">
-                                <i class="fas fa-trash"></i> Sí, Eliminar
-                            </button>
-                        </form>
-                        <a href="{% url 'biblioteca:detalle_producto' producto.id %}" class="btn btn-secondary btn-lg">
-                            <i class="fas fa-times"></i> Cancelar
-                        </a>
+                    <div class="alert alert-warning">
+                        <strong>Tipo:</strong> {{ tipo }}<br>
+                        <strong>Objeto:</strong> "{{ objeto }}"
+                    </div>
 
-                    {% elif tipo == 'categoría' %}
-                        <div class="alert alert-warning">
-                            <strong>{{ categoria.nombre }}</strong><br>
-                            {% if cantidad_productos > 0 %}
-                            <em>Esta categoría contiene {{ cantidad_productos }} producto(s)</em>
-                            {% endif %}
-                        </div>
-                        <p class="text-danger"><strong>Advertencia:</strong> Esta acción no se puede deshacer.</p>
+                    <p class="text-danger">
+                        <strong><i class="fas fa-exclamation-circle"></i> Advertencia:</strong> Esta acción no se puede deshacer.
+                    </p>
+                    
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="fas fa-trash-alt"></i> Sí, Eliminar
+                        </button>
                         
-                        <form method="post" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-lg">
-                                <i class="fas fa-trash"></i> Sí, Eliminar
-                            </button>
-                        </form>
-                        <a href="{% url 'biblioteca:lista_categorias' %}" class="btn btn-secondary btn-lg">
+                        {% if tipo == 'Libro' %}
+                            <a href="{% url 'biblioteca:detalle_libro' objeto.pk %}" class="btn btn-secondary btn-lg">
+                        {% elif tipo == 'Categoría' %}
+                            <a href="{% url 'biblioteca:lista_categorias' %}" class="btn btn-secondary btn-lg">
+                        {% elif tipo == 'Etiqueta' %}
+                            <a href="{% url 'biblioteca:lista_etiquetas' %}" class="btn btn-secondary btn-lg">
+                        {% else %}
+                            <a href="{% url 'biblioteca:index' %}" class="btn btn-secondary btn-lg">
+                        {% endif %}
                             <i class="fas fa-times"></i> Cancelar
                         </a>
-
-                    {% elif tipo == 'etiqueta' %}
-                        <div class="alert alert-warning">
-                            <strong>{{ etiqueta.nombre }}</strong><br>
-                            {% if cantidad_productos > 0 %}
-                            <em>Esta etiqueta está asociada a {{ cantidad_productos }} producto(s)</em>
-                            {% endif %}
-                        </div>
-                        <p class="text-danger"><strong>Advertencia:</strong> Esta acción no se puede deshacer.</p>
-                        
-                        <form method="post" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-lg">
-                                <i class="fas fa-trash"></i> Sí, Eliminar
-                            </button>
-                        </form>
-                        <a href="{% url 'biblioteca:lista_etiquetas' %}" class="btn btn-secondary btn-lg">
-                            <i class="fas fa-times"></i> Cancelar
-                        </a>
-                    {% endif %}
+                    </form>
                 </div>
             </div>
         </div>

@@ -1,191 +1,119 @@
 from django import forms
-from .models import Producto, Categoria, Etiqueta, DetalleProducto
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.models import User
+from .models import Libro, Autor, Categoria, Etiqueta, PerfilUsuario
 
+# ============================================================================
+# FORMULARIOS DE AUTENTICACIÓN Y USUARIO
+# ============================================================================
 
-class BusquedaProductoForm(forms.Form):
-    """Formulario para búsqueda y filtrado de productos"""
-    nombre = forms.CharField(
-        max_length=300,
-        required=False,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Buscar por nombre...'
-        })
+class RegistroUsuarioForm(UserCreationForm):
+    """Formulario de registro de usuarios, extendido para incluir email."""
+    email = forms.EmailField(required=True, help_text='Requerido. Ingrese un email válido.')
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = UserCreationForm.Meta.fields + ('first_name', 'last_name', 'email')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'form-control'})
+
+class LoginForm(AuthenticationForm):
+    """Formulario de login con estilos de Bootstrap."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Nombre de usuario'})
+        self.fields['password'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Contraseña'})
+
+class PerfilUsuarioForm(forms.ModelForm):
+    """Formulario para editar el perfil de usuario."""
+    class Meta:
+        model = PerfilUsuario
+        fields = ['direccion', 'telefono', 'fecha_nacimiento']
+        widgets = {
+            'direccion': forms.TextInput(attrs={'class': 'form-control'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control'}),
+            'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+# ============================================================================
+# FORMULARIOS DE BÚSQUEDA
+# ============================================================================
+
+class BusquedaLibroForm(forms.Form):
+    """Formulario para búsqueda y filtrado de libros."""
+    q = forms.CharField(
+        max_length=200, required=False, label='Buscar',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Título, autor o ISBN...'})
     )
     categoria = forms.ModelChoiceField(
-        queryset=Categoria.objects.all(),
-        required=False,
-        empty_label="Todas las categorías",
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    etiqueta = forms.ModelChoiceField(
-        queryset=Etiqueta.objects.all(),
-        required=False,
-        empty_label="Todas las etiquetas",
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    precio_minimo = forms.DecimalField(
-        required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Precio mínimo',
-            'step': '0.01'
-        })
-    )
-    precio_maximo = forms.DecimalField(
-        required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Precio máximo',
-            'step': '0.01'
-        })
+        queryset=Categoria.objects.all(), required=False, empty_label="Todas las categorías",
+        widget=forms.Select(attrs={'class': 'form-select'})
     )
     disponible = forms.BooleanField(
-        required=False,
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        label='Solo productos disponibles'
+        required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        label='Solo disponibles'
     )
 
+# ============================================================================
+# FORMULARIOS DE MODELOS (CRUD)
+# ============================================================================
 
-class ProductoForm(forms.ModelForm):
-    """Formulario para crear y editar productos"""
+class LibroForm(forms.ModelForm):
+    """Formulario para crear y editar Libros."""
+    autores = forms.ModelMultipleChoiceField(
+        queryset=Autor.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True
+    )
+
     class Meta:
-        model = Producto
-        fields = ['nombre', 'descripcion', 'precio', 'codigo', 'stock', 'disponible', 'categoria', 'etiquetas']
+        model = Libro
+        fields = [
+            'titulo', 'autores', 'descripcion', 'isbn', 'cantidad_disponible', 
+            'categoria', 'etiquetas', 'fecha_publicacion', 'editorial', 
+            'numero_paginas', 'idioma'
+        ]
         widgets = {
-            'nombre': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Nombre del producto'
-            }),
-            'descripcion': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 4,
-                'placeholder': 'Descripción del producto'
-            }),
-            'precio': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': '0.00',
-                'step': '0.01'
-            }),
-            'codigo': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Código único'
-            }),
-            'stock': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': '0'
-            }),
-            'disponible': forms.CheckboxInput(attrs={
-                'class': 'form-check-input'
-            }),
-            'categoria': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'etiquetas': forms.CheckboxSelectMultiple(attrs={
-                'class': 'form-check-input'
-            })
-        }
-        labels = {
-            'nombre': 'Nombre',
-            'descripcion': 'Descripción',
-            'precio': 'Precio ($)',
-            'codigo': 'Código',
-            'stock': 'Stock',
-            'disponible': 'Disponible',
-            'categoria': 'Categoría',
-            'etiquetas': 'Etiquetas'
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'isbn': forms.TextInput(attrs={'class': 'form-control'}),
+            'cantidad_disponible': forms.NumberInput(attrs={'class': 'form-control'}),
+            'categoria': forms.Select(attrs={'class': 'form-select'}),
+            'etiquetas': forms.CheckboxSelectMultiple,
+            'fecha_publicacion': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'editorial': forms.TextInput(attrs={'class': 'form-control'}),
+            'numero_paginas': forms.NumberInput(attrs={'class': 'form-control'}),
+            'idioma': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-
-class DetalleProductoForm(forms.ModelForm):
-    """Formulario para crear y editar detalles de productos"""
+class AutorForm(forms.ModelForm):
+    """Formulario para crear y editar Autores."""
     class Meta:
-        model = DetalleProducto
-        fields = ['peso', 'largo', 'ancho', 'alto', 'material', 'color', 'fabricante']
+        model = Autor
+        fields = ['nombre', 'biografia', 'fecha_nacimiento']
         widgets = {
-            'peso': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Peso en kg',
-                'step': '0.01'
-            }),
-            'largo': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Largo en cm',
-                'step': '0.01'
-            }),
-            'ancho': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Ancho en cm',
-                'step': '0.01'
-            }),
-            'alto': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Alto en cm',
-                'step': '0.01'
-            }),
-            'material': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Material'
-            }),
-            'color': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Color'
-            }),
-            'fabricante': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Fabricante'
-            }),
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'biografia': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
-        labels = {
-            'peso': 'Peso (kg)',
-            'largo': 'Largo (cm)',
-            'ancho': 'Ancho (cm)',
-            'alto': 'Alto (cm)',
-            'material': 'Material',
-            'color': 'Color',
-            'fabricante': 'Fabricante'
-        }
-
 
 class CategoriaForm(forms.ModelForm):
-    """Formulario para crear y editar categorías"""
+    """Formulario para crear y editar Categorías."""
     class Meta:
         model = Categoria
-        fields = ['nombre', 'descripcion']
+        fields = ['nombre']
         widgets = {
-            'nombre': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Nombre de la categoría'
-            }),
-            'descripcion': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 3,
-                'placeholder': 'Descripción'
-            }),
+            'nombre': forms.TextInput(attrs={'class': 'form-control'})
         }
-        labels = {
-            'nombre': 'Nombre',
-            'descripcion': 'Descripción'
-        }
-
 
 class EtiquetaForm(forms.ModelForm):
-    """Formulario para crear y editar etiquetas"""
+    """Formulario para crear y editar Etiquetas."""
     class Meta:
         model = Etiqueta
-        fields = ['nombre', 'descripcion']
+        fields = ['nombre']
         widgets = {
-            'nombre': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Nombre de la etiqueta'
-            }),
-            'descripcion': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 3,
-                'placeholder': 'Descripción'
-            }),
-        }
-        labels = {
-            'nombre': 'Nombre',
-            'descripcion': 'Descripción'
+            'nombre': forms.TextInput(attrs={'class': 'form-control'})
         }

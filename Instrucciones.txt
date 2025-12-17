@@ -1,0 +1,51 @@
+Instrucciones
+
+En función de tu proyecto personal previamente establecido, deberás implementar clase a clase las diferentes tecnologías y competencias técnicas adquiridas a lo largo del curso.
+
+Recuerda que este proyecto irá directamente al registro de evidencia de tu portafolio, el cual deberá demostrar el dominio, competencias técnicas y diferentes habilidades relacionadas con la integración de Django con bases de datos.
+
+Requerimientos Funcionales Mínimos Esperados
+
+Describir las características fundamentales de la integración del framework Django con bases de datos.
+
+Explicar cómo Django se integra con diferentes sistemas de bases de datos, como SQLite, PostgreSQL o MySQL.
+
+Describir cómo Django maneja las conexiones y operaciones con la base de datos a través de su ORM.
+
+Ejemplo: Explicar cómo configurar el archivo settings.py para conectar Django con una base de datos y cómo se gestionan las conexiones.
+
+Implementar la capa de modelo de acceso a datos del aplicativo utilizando entidades no relacionadas para dar solución a una problemática.
+
+Crear modelos simples en Django sin relaciones entre ellos, permitiendo la creación de tablas independientes en la base de datos.
+
+Ejemplo: Crear un modelo de Producto con campos básicos como nombre, precio y cantidad, sin relaciones con otras entidades.
+
+Implementar la capa de modelo de acceso a datos del aplicativo utilizando entidades con relaciones uno a uno, uno a muchos y muchos a muchos para dar solución a una problemática.
+
+Utilizar los tipos de relaciones proporcionados por Django (ForeignKey, OneToOneField, ManyToManyField) para modelar entidades interconectadas.
+
+Ejemplo: Crear un modelo de Pedido que tenga una relación de uno a muchos con el modelo Cliente, y una relación de muchos a muchos con el modelo Producto.
+
+Utilizar migraciones para la propagación de cambios al esquema de base de datos acorde al framework Django.
+
+Ejecutar migraciones para crear y modificar las tablas en la base de datos conforme se realizan cambios en los modelos de datos.
+
+Ejemplo: Crear y aplicar migraciones al agregar un nuevo campo en el modelo Producto, propagando esos cambios a la base de datos.
+
+Realizar consultas de filtrado de datos y consultas personalizadas utilizando el ORM y sentencias SQL para recuperación de información de la base de datos acorde al framework Django dando solución a un problema.
+
+Utilizar el ORM de Django para realizar consultas de filtrado de datos, y crear consultas personalizadas utilizando métodos como filter(), exclude(), get() y annotate().
+
+Ejemplo: Realizar una consulta que recupere todos los pedidos realizados por un cliente específico en un rango de fechas determinado.
+
+Implementar una aplicación web MVC que realiza operaciones CRUD en la base de datos utilizando los componentes del framework Django para dar solución a un problema.
+
+Crear una aplicación Django que implemente las operaciones CRUD (Crear, Leer, Actualizar y Eliminar) en una base de datos.
+
+Ejemplo: Crear una aplicación de gestión de productos que permita agregar, listar, editar y eliminar productos de la base de datos.
+
+Reconocer las aplicaciones preinstaladas con el motor Django distinguiendo su utilidad como apoyo al desarrollo.
+
+Identificar y explicar el propósito de aplicaciones preinstaladas en Django, como django.contrib.admin, django.contrib.auth, django.contrib.sessions, entre otras.
+
+Ejemplo: Configurar y personalizar el panel de administración de Django para gestionar los modelos de la aplicación, como Producto y Pedido.

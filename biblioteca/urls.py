@@ -7,22 +7,38 @@ urlpatterns = [
     # Página de inicio
     path('', views.index, name='index'),
 
-    # Productos
-    path('productos/', views.lista_productos, name='lista_productos'),
-    path('productos/crear/', views.crear_producto, name='crear_producto'),
-    path('productos/<int:id>/', views.detalle_producto, name='detalle_producto'),
-    path('productos/<int:id>/editar/', views.editar_producto, name='editar_producto'),
-    path('productos/<int:id>/eliminar/', views.eliminar_producto, name='eliminar_producto'),
+    # Autenticación
+    path('registro/', views.registro_usuario, name='registro'),
+    path('login/', views.login_usuario, name='login'),
+    path('logout/', views.logout_usuario, name='logout'),
 
-    # Categorías
+    # Perfil de Usuario
+    path('perfil/', views.perfil_usuario, name='perfil_usuario'),
+
+    # Libros (CRUD)
+    path('libros/', views.lista_libros, name='lista_libros'),
+    path('libros/crear/', views.crear_libro, name='crear_libro'),
+    path('libros/<int:pk>/', views.detalle_libro, name='detalle_libro'),
+    path('libros/<int:pk>/editar/', views.editar_libro, name='editar_libro'),
+    path('libros/<int:pk>/eliminar/', views.eliminar_libro, name='eliminar_libro'),
+
+    # Categorías (CRUD)
     path('categorias/', views.lista_categorias, name='lista_categorias'),
     path('categorias/crear/', views.crear_categoria, name='crear_categoria'),
-    path('categorias/<int:id>/editar/', views.editar_categoria, name='editar_categoria'),
-    path('categorias/<int:id>/eliminar/', views.eliminar_categoria, name='eliminar_categoria'),
+    path('categorias/<int:pk>/editar/', views.editar_categoria, name='editar_categoria'),
+    path('categorias/<int:pk>/eliminar/', views.eliminar_categoria, name='eliminar_categoria'),
 
-    # Etiquetas
+    # Etiquetas (CRUD)
     path('etiquetas/', views.lista_etiquetas, name='lista_etiquetas'),
     path('etiquetas/crear/', views.crear_etiqueta, name='crear_etiqueta'),
-    path('etiquetas/<int:id>/editar/', views.editar_etiqueta, name='editar_etiqueta'),
-    path('etiquetas/<int:id>/eliminar/', views.eliminar_etiqueta, name='eliminar_etiqueta'),
+    path('etiquetas/<int:pk>/editar/', views.editar_etiqueta, name='editar_etiqueta'),
+    path('etiquetas/<int:pk>/eliminar/', views.eliminar_etiqueta, name='eliminar_etiqueta'),
+
+    # Préstamos
+    path('prestamos/solicitar/<int:libro_id>/', views.solicitar_prestamo, name='solicitar_prestamo'),
+    path('prestamos/mis-prestamos/', views.mis_prestamos, name='mis_prestamos'),
+    path('prestamos/devolver/<int:prestamo_id>/', views.confirmar_devolucion, name='confirmar_devolucion'),
+    
+    # Página 'Acerca de'
+    path('acerca-de/', views.acerca_de, name='acerca_de'),
 ]

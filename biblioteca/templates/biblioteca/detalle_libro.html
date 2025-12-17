@@ -1,290 +1,108 @@
 {% extends 'biblioteca/base.html' %}
 
-{% block title %}{{ producto.nombre }} - Detalles{% endblock %}
+{% block title %}{{ libro.titulo }} - Detalles{% endblock %}
 
 {% block content %}
 <div class="container my-5">
-    <!-- Navigation -->
+    <!-- Navegación -->
     <div class="row mb-4">
         <div class="col-12">
-            <a href="{% url 'biblioteca:lista_productos' %}" class="btn btn-outline-secondary">
+            <a href="{% url 'biblioteca:lista_libros' %}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left"></i> Volver al Catálogo
             </a>
         </div>
     </div>
 
     <div class="row">
+        <!-- Columna de la Imagen y Acciones de Préstamo -->
         <div class="col-md-4 mb-4">
-            <!-- Product Image Placeholder -->
-            <div style="height: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; border-radius: 12px;">
-                <i class="fas fa-box-open" style="font-size: 4rem;"></i>
+            <div style="height: 400px; background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%); display: flex; align-items-center; justify-content: center; color: white; border-radius: 12px;" class="shadow-sm">
+                <i class="fas fa-book-open" style="font-size: 5rem;"></i>
             </div>
             
-            <!-- Stock Badge -->
-            <div class="mt-3">
-                {% if producto.puede_venderse %}
-                <span class="badge bg-success me-2" style="padding: 0.5rem 1rem; font-size: 1rem;">
-                    <i class="fas fa-check-circle"></i> Disponible ({{ producto.stock }} en stock)
-                </span>
-                {% else %}
-                <span class="badge bg-danger me-2" style="padding: 0.5rem 1rem; font-size: 1rem;">
-                    <i class="fas fa-times-circle"></i> Sin Stock
-                </span>
-                {% endif %}
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    {% if libro.cantidad_disponible > 0 %}
+                        <span class="badge bg-success mb-3 fs-6">Disponible ({{ libro.cantidad_disponible }} en stock)</span>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'biblioteca:solicitar_prestamo' libro.id %}" class="btn btn-success w-100">
+                                <i class="fas fa-hand-holding-heart"></i> Solicitar Préstamo
+                            </a>
+                        {% else %}
+                            <a href="{% url 'biblioteca:login' %}?next={{ request.path }}" class="btn btn-primary w-100">Inicia sesión para solicitar</a>
+                        {% endif %}
+                    {% else %}
+                        <span class="badge bg-danger mb-3 fs-6">No disponible</span>
+                        <button class="btn btn-secondary w-100" disabled>No se puede solicitar</button>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
+        <!-- Columna de Información del Libro -->
         <div class="col-md-8">
-            <!-- Product Information -->
-            <div class="card mb-4">
+            <div class="card">
                 <div class="card-body">
-                    <h1 class="card-title">{{ producto.nombre }}</h1>
-                    
+                    <h1 class="card-title">{{ libro.titulo }}</h1>
+                    <h5 class="card-subtitle mb-3 text-muted">
+                        por 
+                        {% for autor in libro.autores.all %}
+                            {{ autor.nombre }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            Autor desconocido
+                        {% endfor %}
+                    </h5>
+
                     <div class="mb-3">
-                        {% if producto.categoria %}
-                        <span class="badge bg-primary">{{ producto.categoria.nombre }}</span>
+                        {% if libro.categoria %}
+                        <span class="badge bg-primary">{{ libro.categoria.nombre }}</span>
                         {% endif %}
-                        {% for etiqueta in producto.etiquetas.all %}
-                        <span class="badge bg-secondary">{{ etiqueta.nombre }}</span>
+                        {% for etiqueta in libro.etiquetas.all %}
+                        <span class="badge bg-info text-dark">{{ etiqueta.nombre }}</span>
                         {% endfor %}
                     </div>
 
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h4 class="h2">${{ producto.precio }}</h4>
-                        </div>
-                        <div class="col-md-6">
-                            <p class="text-muted">
-                                <strong>Código:</strong> {{ producto.codigo }}
-                            </p>
-                        </div>
-                    </div>
+                    <p>{{ libro.descripcion }}</p>
 
-                    <div class="mb-4">
-                        <h5>Descripción</h5>
-                        <p>{{ producto.descripcion }}</p>
-                    </div>
+                    <table class="table table-striped mt-4">
+                        <tbody>
+                            <tr>
+                                <th scope="row"><i class="fas fa-barcode"></i> ISBN</th>
+                                <td>{{ libro.isbn }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><i class="fas fa-building"></i> Editorial</th>
+                                <td>{{ libro.editorial|default:"No especificada" }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><i class="far fa-file-alt"></i> Páginas</th>
+                                <td>{{ libro.numero_paginas|default:"No especificado" }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><i class="fas fa-language"></i> Idioma</th>
+                                <td>{{ libro.idioma }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><i class="far fa-calendar-alt"></i> Publicación</th>
+                                <td>{{ libro.fecha_publicacion|date:"Y"|default:"No especificada" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                    <!-- Action Buttons -->
-                    <div class="btn-group" role="group">
-                        <a href="{% url 'biblioteca:editar_producto' producto.id %}" class="btn btn-primary">
+                    {% if user.is_authenticated %}
+                    <div class="mt-4 border-top pt-3">
+                        <h5>Acciones de Administrador</h5>
+                        <a href="{% url 'biblioteca:editar_libro' libro.pk %}" class="btn btn-warning">
                             <i class="fas fa-edit"></i> Editar
                         </a>
-                        <a href="{% url 'biblioteca:eliminar_producto' producto.id %}" class="btn btn-danger">
+                        <a href="{% url 'biblioteca:eliminar_libro' libro.pk %}" class="btn btn-danger">
                             <i class="fas fa-trash"></i> Eliminar
                         </a>
                     </div>
-                </div>
-            </div>
-
-            <!-- Product Details -->
-            {% if detalle %}
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-cube"></i> Especificaciones Técnicas</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>Peso:</strong> {{ detalle.peso }} kg</p>
-                            <p><strong>Material:</strong> {{ detalle.material|default:"No especificado" }}</p>
-                            <p><strong>Color:</strong> {{ detalle.color|default:"No especificado" }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Dimensiones:</strong></p>
-                            <ul class="list-unstyled">
-                                <li>Largo: {{ detalle.largo }} cm</li>
-                                <li>Ancho: {{ detalle.ancho }} cm</li>
-                                <li>Alto: {{ detalle.alto }} cm</li>
-                            </ul>
-                        </div>
-                    </div>
-                    {% if detalle.fabricante %}
-                    <p><strong>Fabricante:</strong> {{ detalle.fabricante }}</p>
-                    {% endif %}
-                </div>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- Related Products -->
-    {% if productos_relacionados %}
-    <div class="row mt-5">
-        <div class="col-12">
-            <h3 class="mb-4">Productos Relacionados</h3>
-        </div>
-        {% for prod in productos_relacionados %}
-        <div class="col-md-3 mb-4">
-            <div class="card h-100">
-                <div style="height: 150px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white;">
-                    <i class="fas fa-box-open" style="font-size: 2rem;"></i>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">{{ prod.nombre }}</h5>
-                    <p class="h5">${{ prod.precio }}</p>
-                    <a href="{% url 'biblioteca:detalle_producto' prod.id %}" class="btn btn-sm btn-primary w-100">
-                        Ver Producto
-                    </a>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-</div>
-{% endblock %}
-
-                </div>
-                <div class="card-body">
-                    {% if libro.puede_prestarse %}
-                    <span class="badge bg-success d-block mb-3">
-                        <i class="bi bi-check-circle"></i> Disponible ({{ libro.stock }} unidades)
-                    </span>
-                    {% else %}
-                    <span class="badge bg-danger d-block mb-3">
-                        <i class="bi bi-x-circle"></i> Sin stock
-                    </span>
-                    {% endif %}
-
-                    {% if user.is_authenticated and not usuario_tiene_prestamo %}
-                    {% if libro.puede_prestarse %}
-                    <a href="{% url 'biblioteca:solicitar_prestamo' codigo=libro.codigo %}"
-                        class="btn btn-success w-100 mb-2">
-                        <i class="bi bi-hand-thumbs-up"></i> Solicitar Préstamo
-                    </a>
-                    {% else %}
-                    <button class="btn btn-secondary w-100 mb-2" disabled>
-                        <i class="bi bi-x-circle"></i> No disponible
-                    </button>
-                    {% endif %}
-                    {% elif user.is_authenticated and usuario_tiene_prestamo %}
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> Ya tienes este libro en préstamo.
-                    </div>
-                    {% elif not user.is_authenticated %}
-                    <a href="{% url 'biblioteca:login' %}" class="btn btn-primary w-100 mb-2">
-                        <i class="bi bi-box-arrow-in-right"></i> Inicia sesión para solicitar
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-body">
-                    <h1 class="card-title mb-3">{{ libro.titulo }}</h1>
-
-                    <div class="mb-3">
-                        <h5>Información del Libro</h5>
-                        <table class="table table-borderless">
-                            <tbody>
-                                <tr>
-                                    <td><strong>Autor:</strong></td>
-                                    <td>
-                                        <a href="{% url 'biblioteca:lista_libros' %}?autor={{ libro.autor.id }}">
-                                            {{ libro.autor.nombre }}
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Categoría:</strong></td>
-                                    <td>
-                                        {% if libro.categoria %}
-                                        <a href="{% url 'biblioteca:lista_libros' %}?categoria={{ libro.categoria.id }}">
-                                            <span class="badge-categoria">{{ libro.categoria.nombre }}</span>
-                                        </a>
-                                        {% else %}
-                                        <span class="text-muted">Sin categoría</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Código:</strong></td>
-                                    <td>{{ libro.codigo }}</td>
-                                </tr>
-                                {% if libro.isbn %}
-                                <tr>
-                                    <td><strong>ISBN:</strong></td>
-                                    <td>{{ libro.isbn }}</td>
-                                </tr>
-                                {% endif %}
-                                <tr>
-                                    <td><strong>Stock:</strong></td>
-                                    <td>
-                                        <span class="badge bg-info">{{ libro.stock }} unidades</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Disponible:</strong></td>
-                                    <td>
-                                        {% if libro.disponible %}
-                                        <span class="badge bg-success">Sí</span>
-                                        {% else %}
-                                        <span class="badge bg-danger">No</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Fecha de Ingreso:</strong></td>
-                                    <td>{{ libro.fecha_ingreso|date:"d/m/Y" }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {% if libro.descripcion %}
-                    <div class="mb-3">
-                        <h5>Descripción</h5>
-                        <p>{{ libro.descripcion }}</p>
-                    </div>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Related Books -->
-    {% if libros_relacionados %}
-    <div class="mt-5">
-        <h3 class="mb-4">Libros Relacionados</h3>
-        <div class="row g-4">
-            {% for libro_rel in libros_relacionados %}
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100">
-                    <div class="position-relative">
-                        <div class="libro-thumbnail">
-                            <i class="bi bi-book"></i>
-                        </div>
-                        {% if libro_rel.puede_prestarse %}
-                        <span class="badge bg-success badge-stock">
-                            <i class="bi bi-check-circle"></i> Disponible
-                        </span>
-                        {% else %}
-                        <span class="badge bg-danger badge-stock">
-                            <i class="bi bi-x-circle"></i> Agotado
-                        </span>
-                        {% endif %}
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">{{ libro_rel.titulo|truncatewords:7 }}</h5>
-                        <p class="card-text small text-muted">{{ libro_rel.autor.nombre }}</p>
-                        {% if libro_rel.categoria %}
-                        <span class="badge-categoria">{{ libro_rel.categoria.nombre }}</span>
-                        {% endif %}
-                    </div>
-                    <div class="card-footer bg-transparent border-top">
-                        <a href="{% url 'biblioteca:detalle_libro' codigo=libro_rel.codigo %}"
-                            class="btn btn-primary btn-sm w-100">
-                            Ver Detalles
-                        </a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
 </div>
 {% endblock %}
