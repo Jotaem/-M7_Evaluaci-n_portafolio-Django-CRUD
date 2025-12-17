@@ -1,0 +1,64 @@
+{% extends 'biblioteca/base.html' %}
+
+{% block title %}Etiquetas - Sistema de Gestión de Productos{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+            <h1><i class="fas fa-tags"></i> Gestión de Etiquetas</h1>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'biblioteca:crear_etiqueta' %}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Nueva Etiqueta
+            </a>
+        </div>
+    </div>
+
+    {% if etiquetas %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th class="text-center">Productos</th>
+                    <th>Fecha Creación</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for etiqueta in etiquetas %}
+                <tr>
+                    <td>
+                        <strong>{{ etiqueta.nombre }}</strong>
+                    </td>
+                    <td>
+                        {{ etiqueta.descripcion|truncatewords:10 }}
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-warning">{{ etiqueta.cantidad_productos }}</span>
+                    </td>
+                    <td>
+                        {{ etiqueta.fecha_creacion|date:"d/m/Y H:i" }}
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'biblioteca:editar_etiqueta' etiqueta.id %}" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'biblioteca:eliminar_etiqueta' etiqueta.id %}" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> No hay etiquetas. <a href="{% url 'biblioteca:crear_etiqueta' %}" class="alert-link">Crear una</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,188 @@
+{% extends 'biblioteca/base.html' %}
+
+{% block title %}{{ titulo }} - Sistema de Gestión de Productos{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-plus-circle"></i> {{ titulo }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <h5 class="mb-3">Información del Producto</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.nombre.label_tag }}
+                                    {{ form.nombre }}
+                                    {% if form.nombre.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.nombre.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.codigo.label_tag }}
+                                    {{ form.codigo }}
+                                    {% if form.codigo.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.codigo.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.descripcion.label_tag }}
+                            {{ form.descripcion }}
+                            {% if form.descripcion.errors %}
+                            <div class="invalid-feedback d-block">{{ form.descripcion.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.precio.label_tag }}
+                                    {{ form.precio }}
+                                    {% if form.precio.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.precio.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.categoria.label_tag }}
+                                    {{ form.categoria }}
+                                    {% if form.categoria.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.categoria.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.stock.label_tag }}
+                                    {{ form.stock }}
+                                    {% if form.stock.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.stock.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="form-check mt-4">
+                                        {{ form.disponible }}
+                                        {{ form.disponible.label_tag }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.etiquetas.label_tag }}
+                            <div class="border rounded p-3">
+                                {{ form.etiquetas }}
+                            </div>
+                            {% if form.etiquetas.errors %}
+                            <div class="invalid-feedback d-block">{{ form.etiquetas.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <hr>
+
+                        <h5 class="mb-3">Detalles del Producto (Dimensiones, Especificaciones)</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ detalle_form.peso.label_tag }}
+                                    {{ detalle_form.peso }}
+                                    {% if detalle_form.peso.errors %}
+                                    <div class="invalid-feedback d-block">{{ detalle_form.peso.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ detalle_form.material.label_tag }}
+                                    {{ detalle_form.material }}
+                                    {% if detalle_form.material.errors %}
+                                    <div class="invalid-feedback d-block">{{ detalle_form.material.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ detalle_form.largo.label_tag }}
+                                    {{ detalle_form.largo }}
+                                    {% if detalle_form.largo.errors %}
+                                    <div class="invalid-feedback d-block">{{ detalle_form.largo.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ detalle_form.ancho.label_tag }}
+                                    {{ detalle_form.ancho }}
+                                    {% if detalle_form.ancho.errors %}
+                                    <div class="invalid-feedback d-block">{{ detalle_form.ancho.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ detalle_form.alto.label_tag }}
+                                    {{ detalle_form.alto }}
+                                    {% if detalle_form.alto.errors %}
+                                    <div class="invalid-feedback d-block">{{ detalle_form.alto.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ detalle_form.color.label_tag }}
+                                    {{ detalle_form.color }}
+                                    {% if detalle_form.color.errors %}
+                                    <div class="invalid-feedback d-block">{{ detalle_form.color.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ detalle_form.fabricante.label_tag }}
+                                    {{ detalle_form.fabricante }}
+                                    {% if detalle_form.fabricante.errors %}
+                                    <div class="invalid-feedback d-block">{{ detalle_form.fabricante.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-save"></i> Guardar Producto
+                            </button>
+                            <a href="{% url 'biblioteca:lista_productos' %}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

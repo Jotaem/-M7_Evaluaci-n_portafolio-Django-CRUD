@@ -1,0 +1,166 @@
+{% extends 'biblioteca/base.html' %}
+
+{% block title %}Acerca de - Biblioteca IBG{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <h1 class="mb-4">
+        <i class="bi bi-info-circle"></i> Acerca de Biblioteca IBG
+    </h1>
+
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title mb-3">Sobre Nosotros</h3>
+                    <p>
+                        Biblioteca IBG es una aplicación de gestión de biblioteca desarrollada para el Instituto Bíblico Global.
+                        Nuestro objetivo es proporcionar una plataforma moderna y eficiente para gestionar un catálogo extenso
+                        de libros relacionados con temáticas bíblicas, teológicas y de crecimiento cristiano.
+                    </p>
+
+                    <h4 class="mt-4 mb-3">Características Principales</h4>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <strong>Catálogo Completo:</strong> Más de 600 títulos disponibles
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <strong>Sistema de Búsqueda Avanzado:</strong> Filtra libros por título, autor y categoría
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <strong>Gestión de Préstamos:</strong> Solicita y controla tus préstamos fácilmente
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <strong>Autenticación Segura:</strong> Crea tu cuenta y accede a tus datos protegidos
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <strong>Interfaz Intuitiva:</strong> Diseño responsivo con Bootstrap
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Estadísticas</h5>
+                    <hr>
+                    <p class="small text-muted mb-2">Sistema desarrollado con:</p>
+                    <ul class="list-unstyled">
+                        <li><strong>Django</strong> 6.0</li>
+                        <li><strong>Python</strong> 3.11+</li>
+                        <li><strong>PostgreSQL/SQLite</strong></li>
+                        <li><strong>Bootstrap</strong> 5.3</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Contacto</h5>
+                    <hr>
+                    <p class="small">
+                        <i class="bi bi-envelope"></i> <strong>Email:</strong><br>
+                        info@bibliotecaibg.org
+                    </p>
+                    <p class="small">
+                        <i class="bi bi-telephone"></i> <strong>Teléfono:</strong><br>
+                        (+56) 9 7192 4668
+                    </p>
+                    <p class="small">
+                        <i class="bi bi-geo-alt"></i> <strong>Ubicación:</strong><br>
+                        Los Ángeles, Chile
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-5">
+        <div class="card-body">
+            <h3 class="card-title mb-3">Tecnologías y Competencias Implementadas</h3>
+
+            <h5 class="mt-4 mb-3">1. Framework Django</h5>
+            <p>
+                Utilizamos Django como nuestro framework principal para desarrollar una aplicación web escalable y segura.
+                Django nos proporciona herramientas de administración integradas, ORM potente y seguridad robusta contra
+                ataques comunes como CSRF, SQL Injection y XSS.
+            </p>
+
+            <h5 class="mt-4 mb-3">2. Modelos de Base de Datos</h5>
+            <p>
+                Implementamos modelos para:
+            </p>
+            <ul>
+                <li><strong>Autor:</strong> Gestión de autores de libros</li>
+                <li><strong>Categoría:</strong> Clasificación de libros por tipo</li>
+                <li><strong>Libro:</strong> Información completa de libros con relaciones</li>
+                <li><strong>Préstamo:</strong> Control de préstamos y devoluciones</li>
+            </ul>
+
+            <h5 class="mt-4 mb-3">3. Autenticación y Autorización</h5>
+            <p>
+                Sistema de autenticación de Django con:
+            </p>
+            <ul>
+                <li>Registro de nuevos usuarios</li>
+                <li>Login seguro con sesiones</li>
+                <li>Control de acceso basado en permisos</li>
+                <li>Roles de administrador y usuario regular</li>
+            </ul>
+
+            <h5 class="mt-4 mb-3">4. Formularios Django</h5>
+            <p>
+                Implementamos formularios personalizados para:
+            </p>
+            <ul>
+                <li>Búsqueda y filtrado de libros</li>
+                <li>Registro de usuarios</li>
+                <li>Solicitud de préstamos</li>
+                <li>Actualización de perfiles</li>
+            </ul>
+
+            <h5 class="mt-4 mb-3">5. Panel de Administración</h5>
+            <p>
+                Configuramos y personalizamos el panel de administración de Django con:
+            </p>
+            <ul>
+                <li>Gestión completa de libros, autores y categorías</li>
+                <li>Control de préstamos y devoluciones</li>
+                <li>Búsqueda y filtrado avanzado</li>
+                <li>Auditoría de cambios</li>
+            </ul>
+
+            <h5 class="mt-4 mb-3">6. Templates y Frontend</h5>
+            <p>
+                Desarrollamos una interfaz intuitiva con Bootstrap 5 que incluye:
+            </p>
+            <ul>
+                <li>Diseño responsivo y moderno</li>
+                <li>Navegación clara y accesible</li>
+                <li>Formularios validados y con feedback</li>
+                <li>Mensajes de usuario dinámicos</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card bg-light">
+        <div class="card-body text-center">
+            <h5 class="card-title">Proyecto de Evaluación</h5>
+            <p class="card-text mb-0">
+                Este proyecto ha sido desarrollado como parte de la Evaluación del Portafolio del Módulo 6 de Django
+                en el programa de Talento Digital.
+            </p>
+            <p class="card-text small text-muted mt-2">
+                2025 - Biblioteca IBG
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

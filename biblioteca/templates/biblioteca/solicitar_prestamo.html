@@ -1,0 +1,103 @@
+{% extends 'biblioteca/base.html' %}
+
+{% block title %}Solicitar Préstamo - Biblioteca IBG{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="mb-4">
+                <i class="bi bi-hand-thumbs-up"></i> Solicitar Préstamo
+            </h1>
+
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="libro-thumbnail">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-muted">Libro seleccionado</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ libro.titulo }}</h5>
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td><strong>Autor:</strong></td>
+                                    <td>{{ libro.autor.nombre }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Código:</strong></td>
+                                    <td>{{ libro.codigo }}</td>
+                                </tr>
+                                {% if libro.isbn %}
+                                <tr>
+                                    <td><strong>ISBN:</strong></td>
+                                    <td>{{ libro.isbn }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td><strong>Stock:</strong></td>
+                                    <td>{{ libro.stock }} unidades disponibles</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Detalles del Préstamo</h5>
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.fecha_devolucion_esperada.id_for_label }}" class="form-label">
+                                <i class="bi bi-calendar-event"></i> Fecha de Devolución Esperada
+                            </label>
+                            <p class="form-text text-muted small">
+                                Selecciona la fecha en la que planeas devolver el libro (máximo 30 días).
+                            </p>
+                            {{ form.fecha_devolucion_esperada }}
+                            {% if form.fecha_devolucion_esperada.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.fecha_devolucion_esperada.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Información Importante:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>El libro debe ser devuelto en la fecha especificada.</li>
+                                <li>Si no devolves el libro en la fecha, aparecerá un marcador de "Atrasado".</li>
+                                <li>Solo puedes tener un préstamo activo por libro.</li>
+                                <li>El sistema registrará automáticamente la devolución.</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> Confirmar Préstamo
+                            </button>
+                            <a href="{% url 'biblioteca:detalle_libro' codigo=libro.codigo %}"
+                                class="btn btn-secondary btn-lg">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
